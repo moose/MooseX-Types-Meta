@@ -5,15 +5,36 @@ use Test::More;
 use Moose::Util::TypeConstraints;
 use MooseX::Types::Moose ':all';
 use MooseX::Types::Structured ':all';
-
 use MooseX::Types::Meta ':all';
+use Scalar::Util 'blessed';
 
 sub test {
     my ($name, $code) = @_;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     subtest $name => sub {
         $code->();
         done_testing;
     };
+}
+
+sub check_is {
+    my ($type, $thing) = @_;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    (my $type_name = $type->name) =~ s/^MooseX::Types::Meta:://;
+    ok(
+        $type->check($thing),
+        (blessed($thing) && $thing->can('name') ? $thing->name : $thing) . ' isa ' . $type_name,
+    );
+}
+
+sub check_isnt {
+    my ($type, $thing) = @_;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    (my $type_name = $type->name) =~ s/^MooseX::Types::Meta:://;
+    ok(
+        !$type->check($thing),
+        (blessed($thing) && $thing->can('name') ? $thing->name : $thing) . ' is not a ' . $type_name,
+    );
 }
 
 {
@@ -48,43 +69,43 @@ sub test {
 }
 
 test TypeConstraint => sub {
-    ok(TypeConstraint->check($_)) for TypeConstraint, Int;
-    ok(!TypeConstraint->check($_)) for \42, 'Moose::Meta::TypeConstraint';
+    check_is(TypeConstraint, $_) for TypeConstraint, Int;
+    check_isnt(TypeConstraint, $_) for \42, 'Moose::Meta::TypeConstraint';
 };
 
 test Class => sub {
-    ok(Class->check($_)) for (
+    check_is(Class, $_) for (
         MooseX::Types::Meta->meta,
         TestClass->meta,
         Moose::Meta::Class->meta,
     );
 
-    ok(!Class->check($_)) for 42, TestRole->meta;
+    check_isnt(Class, $_) for 42, TestRole->meta;
 };
 
 test Role => sub {
-    ok(Role->check($_)) for TestRole->meta;
-    ok(!Role->check($_)) for TestClass->meta, 13;
+    check_is(Role, $_) for TestRole->meta;
+    check_isnt(Role, $_) for TestClass->meta, 13;
 };
 
 test Attribute => sub {
-    ok(Attribute->check($_)) for (
+    check_is(Attribute, $_) for (
         TestClass->meta->get_attribute('attr'),
         Moose::Meta::Class->meta->get_attribute('constructor_class'),
     );
 
-    ok(!Attribute->check($_)) for (
+    check_isnt(Attribute, $_) for (
         TestRole->meta->get_attribute('attr'),
         \42,
     );
 };
 
 test RoleAttribute => sub {
-    ok(RoleAttribute->check($_)) for (
+    check_is(RoleAttribute, $_) for (
         TestRole->meta->get_attribute('attr'),
     );
 
-    ok(!RoleAttribute->check($_)) for (
+    check_isnt(RoleAttribute, $_) for (
         TestClass->meta->get_attribute('attr'),
         Moose::Meta::Class->meta->get_attribute('constructor_class'),
         TestClass->meta,
@@ -92,14 +113,14 @@ test RoleAttribute => sub {
 };
 
 test Method => sub {
-    ok(Method->check($_)) for (
+    check_is(Method, $_) for (
         (map { TestClass->meta->get_method($_) } qw(foo bar baz attr)),
         (map { TestRole->meta->get_method($_)  } qw(foo attr)),
         Moose::Meta::Class->meta->get_method('create'),
         Moose::Meta::Class->meta->get_method('new'),
     );
 
-    ok(!Method->check($_)) for (
+    check_isnt(Method, $_) for (
         TestClass->meta->get_attribute('attr'),
         TestClass->meta,
     );
@@ -109,12 +130,12 @@ test TypeCoercion => sub {
     my $tc = subtype as Int;
     coerce $tc, from Str, via { 0 + $_ };
 
-    ok(TypeCoercion->check($_)) for $tc->coercion;
-    ok(!TypeCoercion->check($_)) for $tc, Str, 42;
+    check_is(TypeCoercion, $_) for $tc->coercion;
+    check_isnt(TypeCoercion, $_) for $tc, Str, 42;
 };
 
 test StructuredTypeConstraint => sub {
-    ok(StructuredTypeConstraint->check($_)) for (
+    check_is(StructuredTypeConstraint, $_) for (
         Dict,
         Dict[],
         Dict[foo => Int],
@@ -127,7 +148,7 @@ test StructuredTypeConstraint => sub {
         (subtype as Dict[]),
     );
 
-    ok(!StructuredTypeConstraint->check($_)) for (
+    check_isnt(StructuredTypeConstraint, $_) for (
         ArrayRef,
         ArrayRef[Dict[]],
     );
@@ -137,23 +158,23 @@ test StructuredTypeCoercion => sub {
     my $tc = subtype as Dict[];
     coerce $tc, from Undef, via { +{} };
 
-    ok(StructuredTypeCoercion->check($_)) for $tc->coercion;
-    ok(!StructuredTypeCoercion->check($_)) for $tc, Str, 42;
+    check_is(StructuredTypeCoercion, $_) for $tc->coercion;
+    check_isnt(StructuredTypeCoercion, $_) for $tc, Str, 42;
 };
 
 test TypeEquals => sub {
-    ok((TypeEquals[Num])->check($_)) for Num;
-    ok(!(TypeEquals[Num])->check($_)) for Int, Str;
+    check_is(TypeEquals[Num], $_) for Num;
+    check_isnt(TypeEquals[Num], $_) for Int, Str;
 };
 
 test SubtypeOf => sub {
-    ok((SubtypeOf[Str])->check($_)) for Num, Int, ClassName, RoleName;
-    ok(!(SubtypeOf[Str])->check($_)) for Str, Value, Ref, Defined, Any, Item;
+    check_is(SubtypeOf[Str], $_) for Num, Int, ClassName, RoleName;
+    check_isnt(SubtypeOf[Str], $_) for Str, Value, Ref, Defined, Any, Item;
 };
 
 test TypeOf => sub {
-    ok((TypeOf[Str])->check($_)) for Str, Num, Int, ClassName, RoleName;
-    ok(!(TypeOf[Str])->check($_)) for Value, Ref, Defined, Any, Item;
+    check_is(TypeOf[Str], $_) for Str, Num, Int, ClassName, RoleName;
+    check_isnt(TypeOf[Str], $_) for Value, Ref, Defined, Any, Item;
 };
 
 test 'MooseX::Role::Parameterized' => sub {
@@ -170,24 +191,24 @@ role {
 EOR
 
     test ParameterizableRole => sub {
-        ok(ParameterizableRole->check($_)) for (
+        check_is(ParameterizableRole, $_) for (
             TestRole::Parameterized->meta,
         );
 
-        ok(!ParameterizableRole->check($_)) for (
+        check_isnt(ParameterizableRole, $_) for (
             TestRole->meta,
         );
     };
 
     test ParameterizedRole => sub {
-        ok(ParameterizedRole->check($_)) for (
+        check_is(ParameterizedRole, $_) for (
             TestRole::Parameterized->meta->generate_role(
                 consumer   => Moose::Meta::Class->create_anon_class,
                 parameters => {},
             ),
         );
 
-        ok(!ParameterizedRole->check($_)) for (
+        check_isnt(ParameterizedRole, $_) for (
             TestRole->meta,
         );
     };
