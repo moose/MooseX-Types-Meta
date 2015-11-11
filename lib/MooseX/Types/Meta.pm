@@ -28,6 +28,18 @@ use MooseX::Types -declare => [qw(
 use Carp qw(confess);
 use namespace::clean;
 
+=for :prelude
+=for stopwords
+ParameterizableRole
+ParameterizedRole
+RoleAttribute
+StructuredTypeCoercion
+StructuredTypeConstraint
+TypeCoercion
+TypeConstraint
+
+=cut
+
 # TODO: ParameterizedType{Constraint,Coercion} ?
 #       {Duck,Class,Enum,Parameterizable,Parameterized,Role,Union}TypeConstraint?
 
