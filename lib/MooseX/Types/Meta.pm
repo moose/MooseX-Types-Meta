@@ -1,9 +1,10 @@
+use strict;
+use warnings;
 package MooseX::Types::Meta;
 # ABSTRACT: Moose types to check against Moose's meta objects
 
 our $VERSION = '0.02';
 
-use Moose 1.05 ();
 use MooseX::Types -declare => [qw(
     TypeConstraint
     TypeCoercion
@@ -173,7 +174,5 @@ for my $t (
     Moose::Util::TypeConstraints::register_type_constraint($tc);
     Moose::Util::TypeConstraints::add_parameterizable_type($tc);
 }
-
-__PACKAGE__->meta->make_immutable;
 
 1;
