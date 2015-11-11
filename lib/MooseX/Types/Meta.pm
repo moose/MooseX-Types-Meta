@@ -112,9 +112,15 @@ A L<MooseX::Role::Parameterized::Meta::Role::Parameterizable>.
 
 =cut
 
-class_type ParameterizableRole, {
-    class => 'MooseX::Role::Parameterized::Meta::Role::Parameterizable',
-};
+if (eval { require MooseX::Role::Parameterized; MooseX::Role::Parameterized->VERSION('1.03') }) {
+    role_type ParameterizableRole, {
+        role => 'MooseX::Role::Parameterized::Meta::Trait::Parameterizable',
+    };
+} else {
+    class_type ParameterizableRole, {
+        class => 'MooseX::Role::Parameterized::Meta::Role::Parameterizable',
+    };
+}
 
 =type ParameterizedRole
 
