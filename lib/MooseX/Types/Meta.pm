@@ -26,7 +26,7 @@ use MooseX::Types -declare => [qw(
 
 )];
 use Carp qw(confess);
-use namespace::clean;
+use if MooseX::Types->VERSION >= 0.42, 'namespace::autoclean';
 
 =for :prelude
 =for stopwords
