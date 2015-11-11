@@ -1,2 +1,6 @@
-0.01  Thu, 20 May 2010 23:10:46 +0200
-  * Initial release.
+Revision history for MooseX-Types-Meta
+
+{{$NEXT}}
+
+0.01      2010-05-20 21:10:46Z
+  - Initial release.

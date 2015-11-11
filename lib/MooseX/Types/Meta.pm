@@ -1,6 +1,8 @@
 package MooseX::Types::Meta;
 # ABSTRACT: Moose types to check against Moose's meta objects
 
+our $VERSION = '0.02';
+
 use Moose 1.05 ();
 use MooseX::Types -declare => [qw(
     TypeConstraint
