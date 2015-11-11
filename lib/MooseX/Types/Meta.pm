@@ -3,7 +3,7 @@ use warnings;
 package MooseX::Types::Meta;
 # ABSTRACT: Moose types to check against Moose's meta objects
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use MooseX::Types -declare => [qw(
     TypeConstraint

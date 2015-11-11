@@ -1,5 +1,7 @@
 Revision history for MooseX-Types-Meta
 
+{{$NEXT}}
+
 0.02      2015-11-11 03:48:49Z
   - fix ParameterizableRole to work with changes made to
     MooseX::Role::Parameterized 1.03 (RT#108685)
