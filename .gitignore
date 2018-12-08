@@ -1,4 +1,8 @@
-.*
-!.gitignore
-MooseX-Types-Meta-*
+/.ackrc
+/.build/
+!/.gitignore
+/.latest
+MooseX-Types-Meta-*/
+MooseX-Types-Meta-*.tar.gz
+/META.json
 Debian_CPANTS.txt
