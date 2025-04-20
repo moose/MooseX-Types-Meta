@@ -1,6 +1,8 @@
 Revision history for MooseX-Types-Meta
 
 {{$NEXT}}
+  - remove unneeded call to ->meta->make_immutable in tests, now necessary
+    with MooseX::Types 0.51
 
 0.02      2015-11-11 03:48:49Z
   - fix ParameterizableRole to work with changes made to

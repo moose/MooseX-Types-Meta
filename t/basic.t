@@ -75,7 +75,6 @@ test TypeConstraint => sub {
 
 test Class => sub {
     check_is(Class, $_) for (
-        MooseX::Types::Meta->meta,
         TestClass->meta,
         Moose::Meta::Class->meta,
     );
