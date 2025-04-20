@@ -1,6 +1,6 @@
 Revision history for MooseX-Types-Meta
 
-{{$NEXT}}
+0.03      2025-04-20 16:30:55Z
   - remove unneeded call to ->meta->make_immutable in tests, now necessary
     with MooseX::Types 0.51
 
